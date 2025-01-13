@@ -2,10 +2,10 @@ import pandas as pd
 
 def extract_data(file_path: str) -> pd.DataFrame:
     """
-    Reads the CSV file and extracts the raw data into a DataFrame.
+        Reads the CSV file and extracts the raw data into a DataFrame.
 
-    :param file_path: Path to the Used Cars CSV file
-    :return: Pandas DataFrame containing raw data
+        :param file_path: Path to the Used Cars CSV file
+        :return: Pandas DataFrame containing raw data
     """
     try:
         # Load the CSV file into a DataFrame
