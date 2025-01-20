@@ -1,0 +1,31 @@
+database:
+  name: "used_cars_db"
+  queries:
+    create_cars_table: |
+      CREATE TABLE IF NOT EXISTS Cars (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand TEXT NOT NULL,
+        model TEXT NOT NULL,
+        year INTEGER NOT NULL,
+        age INTEGER NOT NULL,
+        kmDriven REAL NOT NULL,
+        transmission TEXT NOT NULL,
+        owner TEXT NOT NULL,
+        FuelType TEXT NOT NULL,
+        PostedDate DATE NOT NULL,
+        AdditionInfo TEXT,
+        AskPrice REAL NOT NULL,
+        PricePerKm REAL NOT NULL,
+        Brand_Model TEXT NOT NULL,  -- Adjusted to match your DataFrame
+        PricePerKM_mean REAL NOT NULL,  -- Adjusted to match your DataFrame
+        RelativePrice REAL NOT NULL
+
+      );
+
+    create_additional_info_table: |
+      CREATE TABLE IF NOT EXISTS AdditionalInfo (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        car_id INTEGER,
+        addition_info TEXT,
+        FOREIGN KEY (car_id) REFERENCES Cars(id)
+      );
