@@ -216,3 +216,4 @@ def transform_data(data: pd.DataFrame) -> pd.DataFrame:
     data = calculate_relative_price(data)
 
     return data
+

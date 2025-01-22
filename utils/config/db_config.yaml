@@ -1,31 +1,93 @@
 database:
-  name: "used_cars_db"
+  paths:
+    raw_data: '../../resources/raw_data/UsedCarDataset.csv'
+    config: '../../resources/config/db_config.yaml'
+    database: '../../resources/db/used_cars.db'
+    transformed_csv: '../../resources/transformed_data/transformed_data.csv'
   queries:
-    create_cars_table: |
+    create_brands_table: >
+      CREATE TABLE IF NOT EXISTS Brands (
+        brand_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand_name TEXT UNIQUE NOT NULL
+      )
+
+    create_models_table: >
+      CREATE TABLE IF NOT EXISTS Models (
+        model_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand_id INTEGER,
+        model_name TEXT NOT NULL,
+        FOREIGN KEY (brand_id) REFERENCES Brands(brand_id)
+      )
+
+    create_transmission_table: >
+      CREATE TABLE IF NOT EXISTS Transmission (
+        transmission_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        transmission_type TEXT UNIQUE NOT NULL
+      )
+
+    create_owners_table: >
+      CREATE TABLE IF NOT EXISTS Owners (
+        owner_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        owner_type TEXT UNIQUE NOT NULL
+      )
+
+    create_fuel_types_table: >
+      CREATE TABLE IF NOT EXISTS FuelTypes (
+        fuel_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fuel_type TEXT UNIQUE NOT NULL
+      )
+
+    create_cars_table: >
       CREATE TABLE IF NOT EXISTS Cars (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        brand TEXT NOT NULL,
-        model TEXT NOT NULL,
-        year INTEGER NOT NULL,
-        age INTEGER NOT NULL,
-        kmDriven REAL NOT NULL,
-        transmission TEXT NOT NULL,
-        owner TEXT NOT NULL,
-        FuelType TEXT NOT NULL,
-        PostedDate DATE NOT NULL,
-        AdditionInfo TEXT,
-        AskPrice REAL NOT NULL,
-        PricePerKm REAL NOT NULL,
-        Brand_Model TEXT NOT NULL,  -- Adjusted to match your DataFrame
-        PricePerKM_mean REAL NOT NULL,  -- Adjusted to match your DataFrame
-        RelativePrice REAL NOT NULL
+        car_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        brand_id INTEGER,
+        model_id INTEGER,
+        year INTEGER,
+        age INTEGER,
+        km_driven REAL,
+        transmission_id INTEGER,
+        owner_id INTEGER,
+        fuel_type_id INTEGER,
+        ask_price REAL,
+        price_per_km REAL,
+        brand_model TEXT,
+        price_per_km_mean REAL,
+        relative_price REAL,
+        FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),
+        FOREIGN KEY (model_id) REFERENCES Models(model_id),
+        FOREIGN KEY (transmission_id) REFERENCES Transmission(transmission_id),
+        FOREIGN KEY (owner_id) REFERENCES Owners(owner_id),
+        FOREIGN KEY (fuel_type_id) REFERENCES FuelTypes(fuel_type_id)
+      )
 
-      );
+    insert_brand: >
+      INSERT OR IGNORE INTO Brands (brand_name) VALUES (?)
 
-    create_additional_info_table: |
-      CREATE TABLE IF NOT EXISTS AdditionalInfo (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        car_id INTEGER,
-        addition_info TEXT,
-        FOREIGN KEY (car_id) REFERENCES Cars(id)
-      );
+    insert_model: >
+      INSERT OR IGNORE INTO Models (brand_id, model_name) 
+      VALUES ((SELECT brand_id FROM Brands WHERE brand_name = ?), ?)
+
+    insert_transmission: >
+      INSERT OR IGNORE INTO Transmission (transmission_type) VALUES (?)
+
+    insert_owner: >
+      INSERT OR IGNORE INTO Owners (owner_type) VALUES (?)
+
+    insert_fuel_type: >
+      INSERT OR IGNORE INTO FuelTypes (fuel_type) VALUES (?)
+
+    insert_car: >
+      INSERT INTO Cars (
+        brand_id, model_id, year, age, km_driven, 
+        transmission_id, owner_id, fuel_type_id, 
+        ask_price, price_per_km, brand_model, 
+        price_per_km_mean, relative_price
+      ) VALUES (
+        (SELECT brand_id FROM Brands WHERE brand_name = ?),
+        (SELECT model_id FROM Models WHERE model_name = ? AND brand_id = (SELECT brand_id FROM Brands WHERE brand_name = ?)),
+        ?, ?, ?, 
+        (SELECT transmission_id FROM Transmission WHERE transmission_type = ?),
+        (SELECT owner_id FROM Owners WHERE owner_type = ?),
+        (SELECT fuel_type_id FROM FuelTypes WHERE fuel_type = ?),
+        ?, ?, ?, ?, ?
+      )
