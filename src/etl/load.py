@@ -18,7 +18,9 @@ class DatabaseLoader:
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.close()
 
-    def load_config(self, config_file):
+    def load_config(self
+                    , config_file
+                    ):
         """Load configuration from a YAML file.
 
         :param config_file: Path to yaml configuration file
@@ -29,6 +31,7 @@ class DatabaseLoader:
     def create_tables(self):
 
         """Create tables in the SQLite database using queries from the config."""
+
         table_creation_queries = [
             "create_brands_table",
             "create_models_table",
@@ -42,11 +45,9 @@ class DatabaseLoader:
             self.cursor.execute(create_table_query)
         self.connection.commit()
 
-    def load_data(self, df):
-        """Load data from DataFrame into the Cars table."""
-        df.to_sql("Cars", self.connection, if_exists="append", index=False)
-
-    def load_transformed_data(self, df):
+    def load_transformed_data(self,
+                              df
+                              ) -> None:
 
         """
             Load transformed data into normalized database
@@ -54,10 +55,10 @@ class DatabaseLoader:
         """
         # Insert unique lookup data
         lookup_insertions = [
-            ("insert_brand", "Brand"),
-            ("insert_transmission", "Transmission"),
-            ("insert_owner", "Owner"),
-            ("insert_fuel_type", "FuelType")
+            ("insert_brand", "brand"),
+            ("insert_transmission", "transmission"),
+            ("insert_owner", "owner"),
+            ("insert_fuel_type", "fueltype")
         ]
         for query_key, column in lookup_insertions:
             insert_query = self.config["database"]["queries"][query_key]
@@ -67,30 +68,30 @@ class DatabaseLoader:
 
         # Insert models
         insert_model_query = self.config["database"]["queries"]["insert_model"]
-        unique_models = df[["Brand", "model"]].drop_duplicates()
+        unique_models = df[["brand", "model"]].drop_duplicates()
         for _, row in unique_models.iterrows():
-            self.cursor.execute(insert_model_query, (row["Brand"], row["model"]))
+            self.cursor.execute(insert_model_query, (row["brand"], row["model"]))
 
         # Insert cars
         insert_car_query = self.config["database"]["queries"]["insert_car"]
         for _, row in df.iterrows():
             try:
                 self.cursor.execute(insert_car_query, (
-                    row["Brand"],  #brand_name for brand_id
+                    row["brand"],  # brand_name for brand_id
                     row["model"],
-                    row["Brand"],  #brand_name again for model_id lookup
-                    row["Year"],
-                    row["Age"],
-                    row["kmDriven"],
-                    row["Transmission"],
-                    row["Owner"],
-                    row["FuelType"],
-                    row["AskPrice"],
-                    row["PricePerKm"],
-                    row["Brand_Model"],
-                    row["PricePerKM_mean"],
-                    row["RelativePrice"]
-
+                    row["brand"],  # brand_name again for model_id lookup
+                    row["year"],
+                    row["age"],
+                    row["kmdriven"],
+                    row["transmission"],
+                    row["owner"],
+                    row["fueltype"],
+                    row["askprice"],
+                    row["priceperkm"],
+                    row["brand_model"],
+                    row["priceperkm_mean"],
+                    row["relativeprice"],
+                    row["priceclassification"]
                 ))
             except sqlite3.Error as e:
                 print(f"Error inserting car: {e}")

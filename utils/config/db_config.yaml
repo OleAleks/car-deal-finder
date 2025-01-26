@@ -53,6 +53,7 @@ database:
         brand_model TEXT,
         price_per_km_mean REAL,
         relative_price REAL,
+        price_classification TEXT,
         FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),
         FOREIGN KEY (model_id) REFERENCES Models(model_id),
         FOREIGN KEY (transmission_id) REFERENCES Transmission(transmission_id),
@@ -81,7 +82,8 @@ database:
         brand_id, model_id, year, age, km_driven, 
         transmission_id, owner_id, fuel_type_id, 
         ask_price, price_per_km, brand_model, 
-        price_per_km_mean, relative_price
+        price_per_km_mean, relative_price,
+        price_classification
       ) VALUES (
         (SELECT brand_id FROM Brands WHERE brand_name = ?),
         (SELECT model_id FROM Models WHERE model_name = ? AND brand_id = (SELECT brand_id FROM Brands WHERE brand_name = ?)),
@@ -89,5 +91,5 @@ database:
         (SELECT transmission_id FROM Transmission WHERE transmission_type = ?),
         (SELECT owner_id FROM Owners WHERE owner_type = ?),
         (SELECT fuel_type_id FROM FuelTypes WHERE fuel_type = ?),
-        ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?
       )
