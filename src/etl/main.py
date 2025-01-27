@@ -1,10 +1,9 @@
-import yaml
-import extraction
-import transformation
-from load import DatabaseLoader
 from src.etl.extraction import DataExtractor
 from src.etl.transformation import DataTransformer
+from load import DatabaseLoader
+from utils.encryption.encryption import ConfigEncryptor
 
+import yaml
 
 def main():
     config_file = '../../utils/config/db_config.yaml'
@@ -28,6 +27,13 @@ def main():
     #Load data into database
     with DatabaseLoader(config_file) as db_loader:
         db_loader.load_transformed_data(transformed_data)
+
+    #Encrypt db credentials in config
+    ConfigEncryptor.encrypt_config()
+
+    #Decrypt db credentials from config
+    decrypted_config = ConfigEncryptor.decrypt_config()
+    print(yaml.dump(decrypted_config))
 
 if __name__ == "__main__":
     main()
