@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Virtual environments
+venv/
+env/
+.env/
+
+# Database files
+*.db
+
+# Transformed data
+resources/transformed_data/
+
+# Encryption key
+utils/encryption/*.key
