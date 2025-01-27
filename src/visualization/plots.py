@@ -11,16 +11,17 @@ def create_km_driven_boxplot(df):
     """
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    ax.boxplot(df['kmdriven'], patch_artist=True)
-    ax.set_title('Boxplot of Kilometers Driven', fontsize=16)
-    ax.set_ylabel('Kilometers Driven', fontsize=12)
+    ax.boxplot(df["kmdriven"], patch_artist=True)
+    ax.set_title("Boxplot of Kilometers Driven", fontsize=16)
+    ax.set_ylabel("Kilometers Driven", fontsize=12)
 
-    # Format the y-axis to show numbers in a more readable format
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x):,}'))
+    #formatting y-axis to show numbers in readable format
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{int(x):,}"))
 
     # Add grid for better readability
-    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    ax.grid(axis="y", linestyle="--", alpha=0.7)
 
+    #adjusting the padding around plt
     plt.tight_layout()
     return fig
 
@@ -32,13 +33,13 @@ def create_heatmap(df):
 
     """
     #columns for correlation
-    correlation_matrix = df[['relativeprice', 'kmdriven', 'age', 'askprice']].corr()
+    correlation_matrix = df[["relativeprice", "kmdriven", "age", "askprice"]].corr()
 
     #figure and axis
     fig, ax = plt.subplots(figsize=(8, 6))
 
     #creating heatmap
-    cax = ax.matshow(correlation_matrix, cmap='coolwarm')
+    cax = ax.matshow(correlation_matrix, cmap="coolwarm")
 
     #adding color bar
     plt.colorbar(cax)
@@ -46,15 +47,15 @@ def create_heatmap(df):
     # Set ticks and labels
     ax.set_xticks(np.arange(len(correlation_matrix.columns)))
     ax.set_yticks(np.arange(len(correlation_matrix.index)))
-    ax.set_xticklabels(correlation_matrix.columns, rotation=45, ha='right')
+    ax.set_xticklabels(correlation_matrix.columns, rotation=45, ha="right")
     ax.set_yticklabels(correlation_matrix.index)
 
     # Add title
-    ax.set_title('Correlation Heatmap', fontsize=16)
+    ax.set_title("Correlation Heatmap", fontsize=16)
 
     # Display the correlation values on the heatmap
     for (i, j), val in np.ndenumerate(correlation_matrix):
-        ax.text(j, i, f'{val:.2f}', ha='center', va='center', color='black')
+        ax.text(j, i, f"{val:.2f}", ha="center", va="center", color="black")
 
     plt.tight_layout()
     return fig
@@ -69,28 +70,28 @@ def create_histogram(df):
         return None
 
     #removing outliers
-    lower_percentile = df['relativeprice'].quantile(0.05)
-    upper_percentile = df['relativeprice'].quantile(0.95)
+    lower_percentile = df["relativeprice"].quantile(0.05)
+    upper_percentile = df["relativeprice"].quantile(0.95)
 
     filtered_data = df[
-        (df['relativeprice'] >= lower_percentile) &
-        (df['relativeprice'] <= upper_percentile)
+        (df["relativeprice"] >= lower_percentile) &
+        (df["relativeprice"] <= upper_percentile)
         ]
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
     #create histogram
-    ax.hist(filtered_data['relativeprice'], bins=30, edgecolor='black')
+    ax.hist(filtered_data["relativeprice"], bins=30, edgecolor="black")
 
     #customizing axis
-    ax.set_title('Distribution of Relative Prices', fontsize=16)
-    ax.set_xlabel('Relative Price', fontsize=12)
-    ax.set_ylabel('Frequency', fontsize=12)
+    ax.set_title("Distribution of Relative Prices", fontsize=16)
+    ax.set_xlabel("Relative Price", fontsize=12)
+    ax.set_ylabel("Frequency", fontsize=12)
 
     #marking average
-    ax.axvline(x=1, color='r', linestyle='--', label='Average Price')
+    ax.axvline(x=1, color="r", linestyle="--", label="Average Price")
 
-    ax.grid(True, linestyle='--', alpha=0.7)
+    ax.grid(True, linestyle="--", alpha=0.7)
 
     plt.tight_layout()
     return fig
@@ -103,14 +104,14 @@ def create_pie_chart(df):
     fig, ax = plt.subplots(figsize=(5, 3))
 
     # Count price classifications
-    price_class_counts = df['priceclassification'].value_counts()
+    price_class_counts = df["priceclassification"].value_counts()
 
     # Create pie chart
     ax.pie(
         price_class_counts,
         labels=price_class_counts.index,
-        autopct='%1.1f%%',
-        colors=['green', 'lightgreen', 'blue', 'orange', 'red']
+        autopct="%1.1f%%",
+        colors=["green", "lightgreen", "blue", "orange", "red"]
     )
 
     plt.tight_layout()
@@ -120,11 +121,11 @@ def create_pie_chart(df):
 def main():
     # Set page configuration
     st.set_page_config(layout="wide")
-    st.title('Car Deal Analysis')
+    st.title("Car Deal Analysis")
 
     # Load transformed data
     try:
-        df = pd.read_csv('../../resources/transformed_data/transformed_data.csv')
+        df = pd.read_csv("../../resources/transformed_data/transformed_data.csv")
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return
@@ -136,26 +137,25 @@ def main():
     filtered_df, row_count = apply_filters(intermediate_df, filters)
 
     # Display warning if no data is available
-
     if row_count == 0:
         st.warning("No data available for the selected filters. Please adjust your selections.")
         return  # Exit early if no data
 
     # Create tabs for different visualizations
     tab1, tab2, tab3, tab4 = st.tabs([
-        'Boxplot of Kilometers Driven',
-        'Correlation Heatmap',
-        'Relative Price Distribution Histogram',
-        'Price Classification Distribution Pie Chart'
+        "Boxplot of Kilometers Driven",
+        "Correlation Heatmap",
+        "Relative Price Distribution Histogram",
+        "Price Classification Distribution Pie Chart"
     ])
 
     with tab1:
-        st.header('KmDriven Histogram')
+        st.header("KmDriven Histogram")
         fig1 = create_km_driven_boxplot(filtered_df)
         st.pyplot(fig1)
 
     with tab2:
-        st.header('Correlation Heatmap')
+        st.header("Correlation Heatmap")
         fig2 = create_heatmap(filtered_df)
         st.pyplot(fig2)
 
@@ -168,27 +168,27 @@ def main():
             """)
 
     with tab3:
-        st.header('Relative Price Distribution')
+        st.header("Relative Price Distribution")
         fig3 = create_histogram(filtered_df)
         st.pyplot(fig3)
 
     with tab4:
-        st.header('Price Classification Distribution')
+        st.header("Price Classification Distribution")
         fig4 = create_pie_chart(filtered_df)
         st.pyplot(fig4)
 
-    # Display summary statistics
-    st.header('Summary Statistics')
+    #display summary statistics under every tab
+    st.header("Summary Statistics")
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Total Deals", len(filtered_df))
     with col2:
         st.metric("Avg Kilometers", f"{filtered_df['kmdriven'].mean():.0f}")
 
-    # Display filtered dataframe
-    st.header('Filtered Car Deals')
+    #Display filtered df
+    st.header("Filtered Car Deals")
     st.dataframe(filtered_df)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
