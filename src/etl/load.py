@@ -1,5 +1,6 @@
 import sqlite3
 import yaml
+import pandas as pd
 
 
 class DatabaseLoader:
@@ -13,13 +14,14 @@ class DatabaseLoader:
         self.connection = sqlite3.connect(self.database_path)
         self.cursor = self.connection.cursor()  # Create a cursor
         self.create_tables()
+        self.create_views()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.connection.close()
 
     def load_config(self
-                    , config_file
+                    ,config_file
                     ):
         """Load configuration from a YAML file.
 
@@ -38,12 +40,41 @@ class DatabaseLoader:
             "create_transmission_table",
             "create_owners_table",
             "create_fuel_types_table",
+            "create_price_classifications_table",
             "create_cars_table"
         ]
         for query_key in table_creation_queries:
             create_table_query = self.config["database"]["queries"][query_key]
             self.cursor.execute(create_table_query)
         self.connection.commit()
+
+    def create_views(self):
+        """
+            Create views in db for visualization script. Denormalizing the normalized tables.
+        """
+        drop_view_query = "DROP VIEW IF EXISTS car_view;"
+        self.cursor.execute(drop_view_query)
+
+        create_view_query = self.config["database"]["queries"].get("create_cars_view")
+
+        if create_view_query:
+            print("Creating view with the following query:")
+            print(create_view_query)  # Print the SQL query for debugging
+            try:
+                self.cursor.execute(create_view_query)
+                self.connection.commit()
+                print("View created successfully.")
+            except sqlite3.Error as e:
+                print(f"Error creating view: {e}")  # Print any SQL errors
+
+            # Verify the view creation
+            try:
+                # Check if the view exists and print its columns
+                self.cursor.execute("SELECT * FROM Cars LIMIT 5;")  # Adjust the query as needed
+                columns = [description[0] for description in self.cursor.description]
+                print("Columns in the Cars view:", columns)
+            except sqlite3.Error as e:
+                print(f"Error querying the Cars view: {e}")
 
     def load_transformed_data(self,
                               df
@@ -53,12 +84,13 @@ class DatabaseLoader:
             Load transformed data into normalized database
         :param df: Transformed DataFrame
         """
-        # Insert unique lookup data
+        #Insert unique lookup data used for foreign keys later
         lookup_insertions = [
             ("insert_brand", "brand"),
             ("insert_transmission", "transmission"),
             ("insert_owner", "owner"),
-            ("insert_fuel_type", "fueltype")
+            ("insert_fuel_type", "fueltype"),
+            ("insert_price_classification", "priceclassification")
         ]
         for query_key, column in lookup_insertions:
             insert_query = self.config["database"]["queries"][query_key]
@@ -76,6 +108,7 @@ class DatabaseLoader:
         insert_car_query = self.config["database"]["queries"]["insert_car"]
         for _, row in df.iterrows():
             try:
+                #print("Inserting car with values:", row.to_dict())
                 self.cursor.execute(insert_car_query, (
                     row["brand"],  # brand_name for brand_id
                     row["model"],
@@ -93,6 +126,8 @@ class DatabaseLoader:
                     row["relativeprice"],
                     row["priceclassification"]
                 ))
+
+
             except sqlite3.Error as e:
                 print(f"Error inserting car: {e}")
                 print(f"Problematic row: {row}")

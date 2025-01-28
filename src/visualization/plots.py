@@ -1,9 +1,12 @@
+import sqlite3
+
 from filter import create_filter_sidebar, apply_filters
 
 import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+
 
 def create_km_driven_boxplot(df):
     """
@@ -117,18 +120,33 @@ def create_pie_chart(df):
     plt.tight_layout()
     return fig
 
+def load_data_from_db(db_path):
+        """
+            Load data from db view
+        :param db_path: Path to the SQLite database
+        :return: DataFrame containing the data
+        """
+        try:
+            conn = sqlite3.connect(db_path)
+            query = "SELECT * FROM car_view"  # Adjust the query as needed
+            df = pd.read_sql_query(query, conn)
+            conn.close()
+            return df
+
+        except Exception as e:
+
+            print(f"Error loading data from database: {e}")
+            return pd.DataFrame()  # Return an empty df if error
+
 
 def main():
     # Set page configuration
     st.set_page_config(layout="wide")
     st.title("Car Deal Analysis")
 
-    # Load transformed data
-    try:
-        df = pd.read_csv("../../resources/transformed_data/transformed_data.csv")
-    except Exception as e:
-        st.error(f"Error loading data: {e}")
-        return
+    # Load data from the SQLite database
+    db_path = "../../resources/db/used_cars.db"  # Path to your SQLite database
+    df = load_data_from_db(db_path)
 
     # Create sidebar filters
     filters, intermediate_df = create_filter_sidebar(df)

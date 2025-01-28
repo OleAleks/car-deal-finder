@@ -6,14 +6,14 @@ from utils.encryption.encryption import ConfigEncryptor
 import yaml
 
 def main():
-    config_file = '../../utils/config/db_config.yaml'
+    config_file = "../../utils/config/db_config.yaml"
 
     with open(config_file) as file:
         config = yaml.safe_load(file)
 
 
     #Extract data
-    with DataExtractor(config['database']['paths']['raw_data']) as extractor:
+    with DataExtractor(config["database"]["paths"]["raw_data"]) as extractor:
         raw_data = extractor.extract_data()
 
     #Transform data
@@ -21,7 +21,7 @@ def main():
         transformed_data = transformer.transform_data()
 
         #save data to csv for loading
-        transformed_data.to_csv(config['database']['paths']['transformed_csv']
+        transformed_data.to_csv(config["database"]["paths"]["transformed_csv"]
                             , index=False)
 
     #Load data into database
@@ -33,7 +33,7 @@ def main():
 
     #Decrypt db credentials from config
     decrypted_config = ConfigEncryptor.decrypt_config()
-    print(yaml.dump(decrypted_config))
+    #print(yaml.dump(decrypted_config))
 
 if __name__ == "__main__":
     main()
