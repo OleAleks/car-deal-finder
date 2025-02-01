@@ -3,9 +3,9 @@ database:
   encrypted_password: gAAAAABnl8h3idIF4bvI6bKhP2xoaXsToa484QK12LKcQfadkeoGnOpD5wH_LD5JtLJNhHDzOaXm3qY5oVkTC2qFO4SDISF5fA==
   paths:
     config: ../../resources/config/db_config.yaml
-    database: ../../resources/db/used_cars.db
-    raw_data: ../../resources/raw_data/UsedCarDataset.csv
-    transformed_csv: ../../resources/transformed_data/transformed_data.csv
+    database: ../../resources/used_cars.db
+    raw_data: ../../resources/UsedCarDataset.csv
+    transformed_csv: ../../resources/transformed_data.csv
   queries:
     create_brands_table: "CREATE TABLE IF NOT EXISTS Brands (\n  brand_id INTEGER\
       \ PRIMARY KEY AUTOINCREMENT,\n  brand_name TEXT UNIQUE NOT NULL\n)\n"
@@ -14,12 +14,13 @@ database:
       \ INTEGER,\n    age INTEGER,\n    km_driven REAL,\n    transmission_id INTEGER,\n\
       \    owner_id INTEGER,\n    fuel_type_id INTEGER,\n    ask_price REAL,\n   \
       \ price_per_km REAL,\n    brand_model TEXT,\n    price_per_km_mean REAL,\n \
-      \   relative_price REAL,\n    price_classification_id INTEGER,\n    FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),\n\
-      \    FOREIGN KEY (model_id) REFERENCES Models(model_id),\n    FOREIGN KEY (transmission_id)\
-      \ REFERENCES Transmission(transmission_id),\n    FOREIGN KEY (owner_id) REFERENCES\
-      \ Owners(owner_id),\n    FOREIGN KEY (fuel_type_id) REFERENCES FuelTypes(fuel_type_id),\n\
-      \    FOREIGN KEY (price_classification_id) REFERENCES Price_Classifications(price_classification_id)\
-      \  -- Add this line\n);\n"
+      \   relative_price REAL,\n    price_classification_id INTEGER,\n    FOREIGN\
+      \ KEY (brand_id) REFERENCES Brands(brand_id),\n    FOREIGN KEY (model_id) REFERENCES\
+      \ Models(model_id),\n    FOREIGN KEY (transmission_id) REFERENCES Transmission(transmission_id),\n\
+      \    FOREIGN KEY (owner_id) REFERENCES Owners(owner_id),\n    FOREIGN KEY (fuel_type_id)\
+      \ REFERENCES FuelTypes(fuel_type_id),\n    FOREIGN KEY (price_classification_id)\
+      \ REFERENCES Price_Classifications(price_classification_id)  -- Add this line\n\
+      );\n"
     create_cars_view: "CREATE VIEW IF NOT EXISTS car_view AS\nSELECT\n    c.car_id,\n\
       \    b.brand_name AS brand,\n    m.model_name AS model,\n    c.km_driven AS\
       \ kmdriven,\n    c.age,\n    c.ask_price AS askprice,\n    relative_price AS\
