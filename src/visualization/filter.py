@@ -24,16 +24,24 @@ def create_filter_sidebar(df):
 
     #only when brand and model selected more filters available
     if selected_brand != "All" and selected_model != "All":
-        # Further filter by model
+        #more filter by model
         filtered_df = filtered_df[filtered_df["model"] == selected_model]
 
+        #check for only one data or else streamlit error
+        km_min = int(filtered_df["kmdriven"].min())
+        km_max = int(filtered_df["kmdriven"].max())
+
+        if km_min == km_max:
+            st.sidebar.write(f"Kilometers Driven: {km_min} (only one value available)")
+            km_range = (km_min, km_max)
+        else:
         #adjust kilometers driven slider based on current data filter
-        km_range = st.sidebar.slider(
-            "Kilometers Driven",
-            min_value=int(filtered_df["kmdriven"].min()),
-            max_value=int(filtered_df["kmdriven"].max()),
-            value=(int(filtered_df["kmdriven"].min()), int(filtered_df["kmdriven"].max()))
-        )
+            km_range = st.sidebar.slider(
+                "Kilometers Driven",
+                min_value=km_min,
+                max_value=km_max,
+                value=(km_min, km_max)
+            )
 
         #relative Price Classification filter
         price_classifications = ["All", "Very Cheap", "Cheap", "Average", "Expensive", "Very Expensive"]

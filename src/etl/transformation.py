@@ -15,9 +15,9 @@ class DataTransformer:
     def clean_price(self
                     ,price: str
                     ) -> float:
-
         """
             Cleans and converts the price field from a string to a float.
+
         :param price: string
         :return: Numeric price as float
         """
@@ -36,6 +36,7 @@ class DataTransformer:
 
         """
             Cleans and converts the kilometer driven field from a string to a float.
+
         :param kilometer: string
         :return: Numeric kilometers as float
         """

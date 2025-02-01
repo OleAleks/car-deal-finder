@@ -1,6 +1,8 @@
 import pandas as pd
 
+
 class DataExtractor:
+
     def __init__(self, file_path: str):
         self.file_path = file_path
 
@@ -12,8 +14,9 @@ class DataExtractor:
 
     def extract_data(self) -> pd.DataFrame:
         """
-            Reads the CSV file and extracts the raw data into a DataFrame.
-            :return: Pandas DataFrame containing raw data
+        Reads the CSV file and extracts the raw data into a DataFrame.
+
+        :return: Pandas DataFrame containing raw data
         """
         try:
             # Load the CSV file into a DataFrame
@@ -21,4 +24,5 @@ class DataExtractor:
             return data
         except Exception as e:
             print(f"Error reading the file: {e}")
-            return pd.DataFrame()  # Return an empty DataFrame in case of an error
+            return pd.DataFrame()
+            # Return an empty DataFrame in case of an error

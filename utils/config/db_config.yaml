@@ -14,8 +14,7 @@ database:
       \ INTEGER,\n    age INTEGER,\n    km_driven REAL,\n    transmission_id INTEGER,\n\
       \    owner_id INTEGER,\n    fuel_type_id INTEGER,\n    ask_price REAL,\n   \
       \ price_per_km REAL,\n    brand_model TEXT,\n    price_per_km_mean REAL,\n \
-      \   relative_price REAL,\n    price_classification_id INTEGER,  -- Change this\
-      \ to reference the ID\n    FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),\n\
+      \   relative_price REAL,\n    price_classification_id INTEGER,\n    FOREIGN KEY (brand_id) REFERENCES Brands(brand_id),\n\
       \    FOREIGN KEY (model_id) REFERENCES Models(model_id),\n    FOREIGN KEY (transmission_id)\
       \ REFERENCES Transmission(transmission_id),\n    FOREIGN KEY (owner_id) REFERENCES\
       \ Owners(owner_id),\n    FOREIGN KEY (fuel_type_id) REFERENCES FuelTypes(fuel_type_id),\n\

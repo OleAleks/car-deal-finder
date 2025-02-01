@@ -1,6 +1,5 @@
 import sqlite3
 import yaml
-import pandas as pd
 
 
 class DatabaseLoader:
@@ -31,7 +30,6 @@ class DatabaseLoader:
             return yaml.safe_load(file)
 
     def create_tables(self):
-
         """Create tables in the SQLite database using queries from the config."""
 
         table_creation_queries = [
@@ -67,19 +65,9 @@ class DatabaseLoader:
             except sqlite3.Error as e:
                 print(f"Error creating view: {e}")  # Print any SQL errors
 
-            # Verify the view creation
-            try:
-                # Check if the view exists and print its columns
-                self.cursor.execute("SELECT * FROM Cars LIMIT 5;")  # Adjust the query as needed
-                columns = [description[0] for description in self.cursor.description]
-                print("Columns in the Cars view:", columns)
-            except sqlite3.Error as e:
-                print(f"Error querying the Cars view: {e}")
-
     def load_transformed_data(self,
                               df
                               ) -> None:
-
         """
             Load transformed data into normalized database
         :param df: Transformed DataFrame
@@ -93,18 +81,21 @@ class DatabaseLoader:
             ("insert_price_classification", "priceclassification")
         ]
         for query_key, column in lookup_insertions:
+            #get query
             insert_query = self.config["database"]["queries"][query_key]
+            #get values for query
             unique_values = df[column].unique()
+            #combine and execute
             for value in unique_values:
                 self.cursor.execute(insert_query, (value,))
 
-        # Insert models
+        #Insert models
         insert_model_query = self.config["database"]["queries"]["insert_model"]
         unique_models = df[["brand", "model"]].drop_duplicates()
         for _, row in unique_models.iterrows():
             self.cursor.execute(insert_model_query, (row["brand"], row["model"]))
 
-        # Insert cars
+        #Insert cars
         insert_car_query = self.config["database"]["queries"]["insert_car"]
         for _, row in df.iterrows():
             try:
