@@ -145,7 +145,7 @@ def main():
     st.title("Car Deal Analysis")
 
     # Load data from the SQLite database
-    db_path = "../../resources/db/used_cars.db"  # Path to your SQLite database
+    db_path = "../../resources/used_cars.db"
     df = load_data_from_db(db_path)
 
     # Create sidebar filters

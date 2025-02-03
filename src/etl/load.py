@@ -50,27 +50,26 @@ class DatabaseLoader:
         """
             Create views in db for visualization script. Denormalizing the normalized tables.
         """
-        drop_view_query = "DROP VIEW IF EXISTS car_view;"
-        self.cursor.execute(drop_view_query)
+        self.cursor.execute(self.config["database"]["queries"]["drop_view"])
 
         create_view_query = self.config["database"]["queries"].get("create_cars_view")
 
         if create_view_query:
             print("Creating view with the following query:")
-            print(create_view_query)  # Print the SQL query for debugging
+            print(create_view_query)  # Print for debugging
             try:
                 self.cursor.execute(create_view_query)
                 self.connection.commit()
                 print("View created successfully.")
             except sqlite3.Error as e:
-                print(f"Error creating view: {e}")  # Print any SQL errors
+                print(f"Error creating view: {e}")
 
     def load_transformed_data(self,
                               df
                               ) -> None:
         """
             Load transformed data into normalized database
-        :param df: Transformed DataFrame
+            :param df: Transformed DataFrame
         """
         #Insert unique lookup data used for foreign keys later
         lookup_insertions = [
