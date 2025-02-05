@@ -11,7 +11,7 @@ class DatabaseLoader:
 
     def __enter__(self):
         self.connection = sqlite3.connect(self.database_path)
-        self.cursor = self.connection.cursor()  # Create a cursor
+        self.cursor = self.connection.cursor()
         self.create_tables()
         self.create_views()
         return self
@@ -98,7 +98,6 @@ class DatabaseLoader:
         insert_car_query = self.config["database"]["queries"]["insert_car"]
         for _, row in df.iterrows():
             try:
-                #print("Inserting car with values:", row.to_dict())
                 self.cursor.execute(insert_car_query, (
                     row["brand"],  # brand_name for brand_id
                     row["model"],

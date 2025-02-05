@@ -111,8 +111,6 @@ class DataTransformer:
         :param relative_price: float representing the relative price
         :return: str classification of the cars price
         """
-        if pd.isna(relative_price):
-            return "Unknown"
 
         # thresholds and corresponding labels
         classifications = {
@@ -131,8 +129,6 @@ class DataTransformer:
         return "Unknown"  # if no match
 
     def transform_data(self) -> pd.DataFrame:
-        #Exclude rows with NULL in kmDriven
-        self.df = self.df[self.df["kmDriven"].notna()].copy()
 
         #Applying transformation functions
         self.df["AskPrice"] = self.df["AskPrice"].apply(self.clean_price)
@@ -145,5 +141,9 @@ class DataTransformer:
         self.df["PriceClassification"] = self.df["RelativePrice"].apply(self.classify_relative_price)
 
         self.df.columns = self.df.columns.str.lower()
+
+        # Exclude rows with NULL and 0 in kmDriven
+        # using copy to work with a real copy not only a view of original
+        self.df = self.df[self.df["priceclassification"] != "Unknown"].copy()
 
         return self.df
