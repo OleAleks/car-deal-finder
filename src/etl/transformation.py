@@ -16,7 +16,7 @@ class DataTransformer:
                     ,price: str
                     ) -> float:
         """
-            Cleans and converts the price field from a string to a float.
+        Cleans and converts the price field from a string to a float.
 
         :param price: string
         :return: Numeric price as float
@@ -33,9 +33,8 @@ class DataTransformer:
     def clean_km(self
                  ,kilometer: str
                  ) -> float:
-
         """
-            Cleans and converts the kilometer driven field from a string to a float.
+        Cleans and converts the kilometer driven field from a string to a float.
 
         :param kilometer: string
         :return: Numeric kilometers as float
@@ -59,6 +58,12 @@ class DataTransformer:
     def calculate_price_per_km(self,
                                row
                                ) -> float:
+        """
+        Calculate price per kilometer ratio for a vehicle.
+
+        :param row: pandas Series containing vehicle data
+        :return: Price/km ratio as float, -1 for invalid inputs, np.nan for errors
+        """
         price = row["AskPrice"]
         kilometer = row["kmDriven"]
 
@@ -86,6 +91,8 @@ class DataTransformer:
     def calculate_relative_price(self) -> None:
         """
             Calculate the price per kilometer relative to the brand_model average price per kilometer.
+
+            Exclude rows with PricePerKm == -1 (new cars with insufficient data)
         """
         # exclude rows with PricePerKm == -1 from the calculation because they are new cars
         # not enough data and priceperkm calculation doesnt work
@@ -107,7 +114,8 @@ class DataTransformer:
                                 , relative_price: float
                                 ) -> str:
         """
-            Classify the relative price of a car based on thresholds defined in dictionary.
+        Classify the relative price of a car based on thresholds defined in dictionary.
+
         :param relative_price: float representing the relative price
         :return: str classification of the cars price
         """
@@ -125,11 +133,14 @@ class DataTransformer:
         for label, (lower, upper) in classifications.items():
             if lower <= relative_price < upper:
                 return label
-
         return "Unknown"  # if no match
 
     def transform_data(self) -> pd.DataFrame:
+        """
+        Apply all transformation functions and return processed DataFrame.
 
+        :return: processed DataFrame
+        """
         #Applying transformation functions
         self.df["AskPrice"] = self.df["AskPrice"].apply(self.clean_price)
         self.df["kmDriven"] = self.df["kmDriven"].apply(self.clean_km)
@@ -138,7 +149,8 @@ class DataTransformer:
         self.update_car_age()
         self.create_brand_model_column()
         self.calculate_relative_price()
-        self.df["PriceClassification"] = self.df["RelativePrice"].apply(self.classify_relative_price)
+        self.df["PriceClassification"] = self.df["RelativePrice"].apply(
+            self.classify_relative_price)
 
         self.df.columns = self.df.columns.str.lower()
 

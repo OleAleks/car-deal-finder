@@ -5,12 +5,12 @@ from utils.encryption.encryption import ConfigEncryptor
 
 import yaml
 
+
 def main():
     config_file = "../../utils/config/db_config.yaml"
 
     with open(config_file) as file:
         config = yaml.safe_load(file)
-
 
     #Extract data
     with DataExtractor(config["database"]["paths"]["raw_data"]) as extractor:

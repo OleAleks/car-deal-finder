@@ -32,8 +32,7 @@ def create_km_driven_boxplot(df):
 def create_heatmap(df):
 
     """
-        Create a heatmap of correlations between features using Matplotlib.
-
+    Create a heatmap of correlations between features using Matplotlib.
     """
     #columns for correlation
     correlation_matrix = df[["relativeprice", "kmdriven", "age", "askprice"]].corr()
@@ -66,7 +65,7 @@ def create_heatmap(df):
 
 def create_histogram(df):
     """
-        Create a histogram of relative prices
+    Create a histogram of relative prices
     """
     if df.empty:
         st.warning("No data available for histogram")
@@ -122,7 +121,8 @@ def create_pie_chart(df):
 
 def load_data_from_db(db_path):
         """
-            Load data from db view
+        Load data from database car_view. (Should be in DatabaseLoadClass but issues with packages)
+
         :param db_path: Path to the SQLite database
         :return: DataFrame containing the data
         """
@@ -148,7 +148,7 @@ def main():
     db_path = "../../resources/used_cars.db"
     df = load_data_from_db(db_path)
 
-    # Create sidebar filters
+    # Create sidebar with basic filters
     filters, intermediate_df = create_filter_sidebar(df)
 
     # Apply additional filters

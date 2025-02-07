@@ -4,12 +4,22 @@ import yaml
 
 class DatabaseLoader:
     def __init__(self, config_file):
+        """
+        Initialize DatabaseLoader instance and load configuration.
+
+        :param: config_file: Path to YAML configuration file
+        """
         self.config = self.load_config(config_file)
         self.connection = None
         self.cursor = None
         self.database_path = self.config["database"]["paths"]["database"]
 
     def __enter__(self):
+        """
+        Establish database connection and initialize schema when entering context.
+
+        :return: DatabaseLoader Initialized instance with active database connection
+        """
         self.connection = sqlite3.connect(self.database_path)
         self.cursor = self.connection.cursor()
         self.create_tables()
@@ -20,11 +30,12 @@ class DatabaseLoader:
         self.connection.close()
 
     def load_config(self
-                    ,config_file
-                    ):
+                    ,config_file: str
+                    ) -> dict:
         """Load configuration from a YAML file.
 
         :param config_file: Path to yaml configuration file
+        :return: Dictionary with configuration settings
         """
         with open(config_file, "r") as file:
             return yaml.safe_load(file)

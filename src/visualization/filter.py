@@ -3,7 +3,12 @@ import streamlit as st
 
 def create_filter_sidebar(df):
     """
-        Create Streamlit sidebar for hierarchical filtering
+    Create an interactive sidebar with hierarchical filters for car data.
+    The filtering hierarchy is: Brand -> Model -> Kilometer range -> Price classification.
+
+    :param df (pd.DataFrame): Transformed DataFrame containing car deal data
+    :return filters (dict): Dictionary with current filter settings
+    :return filtered_df (pd.DataFrame): DataFrame filtered by basic selections
     """
     st.sidebar.header("Car Deal Filters")
 
@@ -67,10 +72,13 @@ def create_filter_sidebar(df):
 
 def apply_filters(df, filters):
     """
-        Apply filters to a copy of the DataFrame
-        :param df: transformed DataFrame
-        :param filters: dictionary of filters
-        :return df: DataFrame with applied filters
+    Apply selected filters to the DataFrame and return filtered results.
+
+
+    :param df (pd.DataFrame): Original DataFrame with car data
+    :param filters (dict): Dictionary containing filter parameters
+    :return pd.DataFrame: Filtered DataFrame
+    :return int: Number of remaining entries after filtering
     """
     filtered_df = df.copy()
 

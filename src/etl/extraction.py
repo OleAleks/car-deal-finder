@@ -24,5 +24,5 @@ class DataExtractor:
             return data
         except Exception as e:
             print(f"Error reading the file: {e}")
-            return pd.DataFrame()
             # Return an empty DataFrame in case of an error
+            return pd.DataFrame()
